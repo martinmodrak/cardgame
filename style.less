@@ -1,13 +1,40 @@
 @base-color: black;
 @border-color: #c0c0c0;
-@border-width: 0.2mm;
+@border-width: 0.5mm;
 
-@pageWidth:21cm;
-@pageHeight:29.7cm;
-@pageMargin:0.5cm;
+@pageWidth:15.001cm;
+@pageHeight:28cm;
+@pageMargin:0cm;
 
 @cardWidth: 50mm;
 @cardHeight: 70mm;
+
+@topicSize: 20mm;
+@topicMarginTop: 7mm;
+
+@contentMarginHorizontal: 7mm;
+
+@depthMarginTop: 0mm;
+@depthMarginLeft: @contentMarginHorizontal;
+@depthFontSize: 8mm;
+
+@nameMarginLeft: @depthMarginLeft + 8mm;
+@nameMarginTop: 1.5mm;
+@nameFontSize: 8pt;
+
+@effectMarginBottom: 8mm;
+@effectFontSize: 7pt;
+
+@effectImageSize: 8mm;
+
+@effectTextMarginBottom: 2mm;
+
+@followupsMarginBottom: 5mm;
+@followupsSize: 8mm;
+@followupMargin: 1.5mm;
+
+@locationTagMarginTop: 10mm;
+@locationTagFontSize: 7mm;
 
 .withBorder(@border-color: @border-color, @border-width: @border-width) {
     box-shadow: 
@@ -69,7 +96,7 @@
 
 body {
     margin:0 auto;
-    width:2 * @pageWidth;
+    width:@pageWidth;
     color:@base-color;
 }
 
@@ -103,4 +130,95 @@ body {
     float:left;
     position:relative;
     .withBorder();
+    overflow: hidden;
+}
+
+.fullCardImg {
+    display:block;
+    position:absolute;
+    width:100%;
+    height:100%;
+}
+
+.topic {
+    display:block;
+    position: absolute;
+    left: (@cardWidth - @topicSize) / 2;
+    top: @topicMarginTop;
+    width: @topicSize;
+    height: @topicSize;
+}
+
+.locationTag {
+    display:block;
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    top: @locationTagMarginTop;
+    font-size: @locationTagFontSize;
+    font-family: "skautbold";
+}
+
+.depth {
+    display:block;
+    position: absolute;
+    left: @depthMarginLeft;
+    text-align: left;
+    font-size: @depthFontSize;
+    font-family: "skautbold";
+    top: @topicMarginTop + @topicSize + @depthMarginTop;
+}
+
+.name {
+    display:block;
+    position: absolute;
+    left: @nameMarginLeft;
+    right: @contentMarginHorizontal;
+    text-align: left;
+    font-size: @nameFontSize;
+    font-family: "skautbold";
+    top: @topicMarginTop + @topicSize + @nameMarginTop;
+}
+
+.content() {
+    display:block;
+    position: absolute;
+    left: @contentMarginHorizontal;
+    right: @contentMarginHorizontal;
+}
+
+.effect {
+    .content();
+    bottom: @effectMarginBottom + @effectTextMarginBottom + @followupsMarginBottom + @followupsSize;
+}
+
+.effectText {
+    .content();
+    bottom: @effectTextMarginBottom + @followupsMarginBottom + @followupsSize;
+    font-size: @effectFontSize;
+    font-style: italic;
+}
+
+.followups {
+    .content();
+    bottom: @followupsMarginBottom;
+}
+
+
+.followup {
+    display:block;
+    float:left;
+    position: relative;
+    width: @followupsSize;
+    height: @followupsSize;
+    margin-left: @followupMargin;
+    margin-right: @followupMargin;
+}
+
+.gainFocus {
+    display:block;
+    float:left;
+    position:relative;
+    width: @effectImageSize;
+    margin-left: - @effectImageSize * 0.66; 
 }
