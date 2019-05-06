@@ -13,11 +13,11 @@ numCardBorders = 3
 
 locations : List Location
 locations =
-    [ Location "" {target = Friend, focus = 1 , cards = 0, conditional = Just { focus = 2, cards = 0}} 
-    , Location "" {target = Friend, focus = 1 , cards = 1, conditional = Just { focus = 2, cards = 1}} 
-    , Location "" (simpleFriendEffect 1 0)
-    , Location "" (simpleFriendEffect 1 1)
-    , Location "" {target = YouAndFriend, focus = 1 , cards = 0, conditional = Nothing} 
+    [ Location "Nice Dinner" {target = Friend, focus = 1 , cards = 0, conditional = Just { focus = 2, cards = 0}} 
+    , Location "Karaoke Bar" {target = Friend, focus = 1 , cards = 1, conditional = Just { focus = 2, cards = 1}} 
+    , Location "Rock Climbing" (simpleFriendEffect 1 0)
+    , Location "Board Game Club" (simpleFriendEffect 1 1)
+    , Location "Walk Outside" {target = YouAndFriend, focus = 1 , cards = 0, conditional = Nothing} 
     ]
 
 conversations : List Conversation
@@ -154,14 +154,11 @@ cardFromDef depth topic (name, effect, adjacency) =
 
 followupsFromAdjacency : Topic -> Adjacency -> List Topic
 followupsFromAdjacency topic adjacency =
-    let 
-        tail = case adjacency of
-            Left -> [ adjacentLeft topic]
-            Right -> [adjacentRight topic ]
-            Both -> [adjacentLeft topic, adjacentRight topic]
+    case adjacency of
+            Left -> topic :: [ adjacentLeft topic]
+            Right -> topic :: [adjacentRight topic ]
+            Both -> topic :: [adjacentLeft topic, adjacentRight topic]
             No -> []
-    in 
-        topic :: tail
 
 type Adjacency 
     = Left

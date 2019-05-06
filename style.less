@@ -16,18 +16,18 @@
 
 @depthMarginTop: 0mm;
 @depthMarginLeft: @contentMarginHorizontal;
-@depthFontSize: 8mm;
+@depthFontSize: 7mm;
 
 @nameMarginLeft: @depthMarginLeft + 8mm;
 @nameMarginTop: 1.5mm;
 @nameFontSize: 8pt;
 
-@effectMarginBottom: 8mm;
-@effectFontSize: 7pt;
+@effectMarginBottom: 6.5mm;
+@effectFontSize: 6pt;
 
-@effectImageSize: 8mm;
+@effectImageSize: 7mm;
 
-@effectTextMarginBottom: 2mm;
+@effectTextMarginBottom: 1mm;
 
 @followupsMarginBottom: 5mm;
 @followupsSize: 8mm;
@@ -100,6 +100,7 @@ body {
     color:@base-color;
 }
 
+/*
 //@media print {
 .pagebreak {
     page-break-after: always;
@@ -111,7 +112,10 @@ body {
     width:0;
     height:0;
 }
-
+*/
+.pagebreak {
+    display:none;
+}
 
 .page {
     float:left;
@@ -120,6 +124,7 @@ body {
     padding:0;    
     position: relative;
     .withBorder();
+    page-break-after: always;
 }
 
 
@@ -132,6 +137,11 @@ body {
     .withBorder();
     overflow: hidden;
 }
+
+.page:nth-child(4n+3) .card{
+    float:right;
+}
+
 
 .fullCardImg {
     display:block;
@@ -180,6 +190,12 @@ body {
     top: @topicMarginTop + @topicSize + @nameMarginTop;
 }
 
+.location .name {
+    left: @contentMarginHorizontal;
+    text-align:center;
+    top: @topicMarginTop + @topicSize + @nameMarginTop - 2mm;
+}
+
 .content() {
     display:block;
     position: absolute;
@@ -199,6 +215,13 @@ body {
     font-style: italic;
 }
 
+.location .effectText {
+    .content();
+    bottom:  @followupsMarginBottom + 2mm;
+    font-size: @effectFontSize;
+}
+
+
 .followups {
     .content();
     bottom: @followupsMarginBottom;
@@ -215,10 +238,51 @@ body {
     margin-right: @followupMargin;
 }
 
-.gainFocus {
+
+.effectElement() {
     display:block;
     float:left;
     position:relative;
+}
+
+.effectSign {
+    .effectElement();
+    font-family: "skautbold";
+    font-size:13pt;
+}
+
+.targetFriend {
+    .effectElement();
+    width: @effectImageSize + 3mm;
+}
+
+.targetBoth {
+    .effectElement();
+    width: @effectImageSize + 4mm;
+    margin-right: 2mm;
+    margin-top:-2mm;
+}
+
+
+.gainFocus, .gainFocusFirst, .gainCard, .gainCardFirst {
+    .effectElement();
+    width: @effectImageSize * 0.9;
+    margin-left: -(@effectImageSize * 0.66); 
+}
+
+.gainCard {
+    margin-left: -(@effectImageSize * 0.5); 
+}
+
+.gainFocusFirst, .gainCardFirst {
+    margin-left : 0;
+}
+
+.conditionalEffect {
+    clear:both;
+}
+
+.conditionalEffectHeader {
+    .effectElement();
     width: @effectImageSize;
-    margin-left: - @effectImageSize * 0.66; 
 }

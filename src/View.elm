@@ -9,7 +9,7 @@ import Data
 view : Model -> Html Never
 view model =
     div [ Attr.class "wrapper" ] 
-    (List.append (List.map viewPage model.pages) )
+    (List.map viewPage model.pages |> List.concat) 
 
 -- credits : List (Html Never)
 -- credits = 
@@ -48,8 +48,8 @@ viewBackFace : Card -> Html Never
 viewBackFace card =
     let 
         imageName = case card of 
-            BugCard _ -> "bugBack"
-            _ -> "back"
+            BugCard _ -> "backBug"
+            _ -> "backConversation"
     in
     img [Attr.class "fullCardImg"
          , Attr.src (String.concat ["img/", imageName, ".svg"]) ] []  
@@ -71,10 +71,12 @@ viewLocation location =
 viewConversation : Conversation -> Html Never
 viewConversation convo =
     let 
+        name = if String.length(convo.name) == 0 then String.concat ["<", toString convo.topic, ">"]
+                else convo.name
         mainContent = 
             [ img [ Attr.class "topic", Attr.src (imgForTopic convo.topic) ] []
             , div [ Attr.class "depth"] [ text (toString convo.depth)]
-            , div [ Attr.class "name"] [ text convo.name]
+            , div [ Attr.class "name"] [ text name]
             , div [ Attr.class "effect"] (viewEffect convo.effect)
             , div [ Attr.class "effectText"] [ text (effectText convo.effect)]            
             ]
@@ -99,16 +101,24 @@ viewEffect effect =
 viewConditionalEffect : Int -> Int -> List (Html Never)    
 viewConditionalEffect focus cards =
     (img [Attr.class "conditionalEffectHeader", Attr.src "img/conditionalEffect.svg"] [] ) 
-    :: (text "≤ ")       
-    :: (text (toString Data.conditionalEffectBound) )
-    :: (img [Attr.class "conditionalEffectBridge", Attr.src "img/conditionalEffectBridge.svg"] [] ) 
+    :: (div [ Attr.class "effectSign"] 
+        [text "≤ ", text (toString Data.conditionalEffectBound) ])
+    :: (div [ Attr.class "effectSign"] [text ":"]) 
     :: (viewEffectCore focus cards)
 
 viewEffectCore : Int -> Int -> List (Html Never)    
 viewEffectCore n_focus n_cards =
     let 
-        focus = List.repeat n_focus (img [Attr.class "gainFocus", Attr.src "img/focus2.svg"] [])
-        cards = List.repeat n_cards (img [Attr.class "gainCard", Attr.src "img/card.svg"] [])
+        focus = if n_focus > 0 then 
+            (div [ Attr.class "effectSign"] [text "+"])
+            :: (img [Attr.class "gainFocusFirst", Attr.src "img/focus2.svg"] [])
+            :: (List.repeat (n_focus  - 1) (img [Attr.class "gainFocus", Attr.src "img/focus2.svg"] []))
+            else []
+        cards = if n_cards > 0 then 
+            (div [ Attr.class "effectSign"] [text "+"])
+            :: (img [Attr.class "gainCardFirst", Attr.src "img/card.svg"] [])
+            :: (List.repeat (n_cards  - 1) (img [Attr.class "gainCard", Attr.src "img/card.svg"] []))
+            else []
     in
         List.append focus cards
 
