@@ -1,48 +1,33 @@
 module Types exposing (..)
 
-type Topic 
-    = Family 
-    | Work
-    | Hobbies
-    | People
+type Need 
+    = Pratelstvi 
+    | Posun
+    | Presah
 
-type EffectTarget 
-    = You
-    | Friend
-    | YouAndFriend    
+type Direction 
+    = Top
+    | Left
+    | Right
+    | Bottom
 
-type alias Effect = 
-    { target : EffectTarget
-    , focus : Int
-    , cards : Int
-    , conditional: Maybe { focus : Int, cards: Int}
+type alias Sheep =
+    { name: String
+    , needs: List (Need, Int)
+    , skills: List (Int, Direction)
     }
 
-type alias Conversation =
-    { topic : Topic
-    , depth : Int
-    , name : String
-    , effect : Effect
-    , followups: List Topic
-    }
-
-type alias Location =
-    { name : String
-    , effect : Effect
+type alias Activity =
+    { name: String
+    , skills: List (Int, Direction)
     }
 
 type Card 
-    = BugCard Conversation
-    | ConversationCard Conversation 
-    | LocationCard Location
-
-type CardFace
-    = BlankFace
-    | BackFace Card
-    | FrontFace Int Card
+    --= SheepCard Sheep
+    = ActivityCard Activity 
 
 type alias Page =
-    { cards: List CardFace
+    { cards: List Card
     }
 
 

@@ -3,181 +3,80 @@ module Data exposing(..)
 import Types exposing (..)
 
 cardsPerPage : Int
-cardsPerPage = 12
+cardsPerPage = 20
 
-conditionalEffectBound: Int
-conditionalEffectBound = 2
+sheepsPerTeam : Int
+sheepsPerTeam = 20
 
-numCardBorders : Int
-numCardBorders = 3
+numSkills : Int
+numSkills = 5
 
-locations : List Location
-locations =
-    [ Location "Nice Dinner" {target = Friend, focus = 1 , cards = 0, conditional = Just { focus = 2, cards = 0}} 
-    , Location "Karaoke Bar" {target = Friend, focus = 1 , cards = 1, conditional = Just { focus = 2, cards = 1}} 
-    , Location "Rock Climbing" (simpleFriendEffect 1 0)
-    , Location "Board Game Club" (simpleFriendEffect 1 1)
-    , Location "Walk Outside" {target = YouAndFriend, focus = 1 , cards = 0, conditional = Nothing} 
+numSkillsSingleTeam : Int
+numSkillsSingleTeam = 4
+
+numTeams : Int
+numTeams = 7
+
+activities : List Activity
+activities = activitiesData |> List.indexedMap activityFromDataWrapper
+
+activitiesData : List (String, List Int)
+activitiesData =
+    [ ("Výlet", [1])
+    , ("2", [2])
+    , ("3", [3])
+    , ("4", [4])
+    , ("5", [5])
+    -------------
+    , ("Menší ORWO", [1, 2])
+    , ("2", [1, 3])
+    , ("3", [1, 4])
+    , ("4", [1, 5])
+    , ("5", [2, 3])
+    , ("6", [2, 4])
+    , ("7", [2, 5])
+    , ("8", [3, 4])
+    , ("9", [3, 5])
+    , ("10", [4, 5])
+    ------
+    , ("Menší ORWO", [1, 2, 3])
+    , ("2", [1, 2, 4])
+    , ("3", [1, 2, 5])
+    , ("4", [1, 3, 4])
+    , ("5", [1, 3, 5])
+    , ("6", [1, 4, 5])
+    , ("7", [2, 3, 4])
+    , ("8", [2, 3, 5])
+    , ("9", [2, 4, 5])
+    , ("10", [3, 4, 5])
     ]
 
-conversations : List Conversation
-conversations =
-    [ depth1Conversations 
-    , depth2Conversations 
-    , depth3Conversations ] |> List.concat
+activityFromDataWrapper : Int -> (String, List Int) -> Activity 
+activityFromDataWrapper order data =
+    let
+        flipOrder = (order % 2 == 1)
+        startDirection = 
+            Left
+    in
+        activityFromData data startDirection flipOrder
 
-depth1Conversations: List Conversation
-depth1Conversations =
-    [ cardSet 1 Family 
-        [ ("Mom's birthday"
-          , {target = You, focus = 1 , cards = 0, conditional = Just { focus = 3, cards = 0}} 
-          , Right)
-        ,("Dinner with in-laws", simpleFriendEffect 0 2, Both)
-        ]
-    , cardSet 1 Work 
-        [ ("Asking for a rise"
-          , {target = You, focus = 1 , cards = 0, conditional = Just { focus = 2, cards = 0}} 
-          , Left)
-        ,("New project", simpleFriendEffect 0 1, Both)
-        ]
-    , cardSet 1 Hobbies 
-        [ ("A new board game"
-          , {target = You, focus = 0 , cards = 1, conditional = Just { focus = 2, cards = 1}} 
-          , Left)
-        ,("Something I read online", simpleFriendEffect 0 2, Both)
-        ]
-    , cardSet 1 People
-        [ ("A friend has a new job"
-          , {target = You, focus = 0 , cards = 1, conditional = Just { focus = 1, cards = 2}} 
-          , Right)
-        ,("", simpleFriendEffect 0 1, Both)
-        ]
-    ] |> List.concat
-
-depth2Conversations: List Conversation
-depth2Conversations =
-    [ cardSet 2 Family 
-        [ ("", simpleEffect 3 0, Left)
-        ,("", simpleEffect 2 0, Both)
-        ]
-    , cardSet 2 Work 
-        [ ("", simpleEffect 2 1, Right)
-        ,("", simpleEffect 1 1, Both)
-        ]
-    , cardSet 2 Hobbies 
-        [ ("", simpleEffect 2 0, Right)
-        ,("", simpleEffect 1 1, Both)
-        ]
-    , cardSet 2 People
-        [ ("", simpleEffect 2 1, Left)
-        ,("", simpleEffect 2 0, Both)
-        ]
-    ] |> List.concat
-
-depth3Conversations: List Conversation
-depth3Conversations =
-    [ cardSet 3 Family 
-        [ ("", simpleEffect 1 1, Left)
-        ,("", simpleEffect 2 0, Right)
-        ]
-    , cardSet 3 Work 
-        [ ("", simpleEffect 2 0, Left)
-        ,("", simpleEffect 1 2, Right)
-        ]
-    , cardSet 3 Hobbies 
-        [ ("", simpleEffect 2 0, Left)
-        ,("", simpleEffect 0 3, Right)
-        ]
-    , cardSet 3 People
-        [ ("", simpleEffect 1 2, Left)
-        ,("", simpleEffect 2 2, Right)
-        ]
-    ] |> List.concat
-
-bugConversation: List Conversation
-bugConversation =
-    [ cardSet 4 Family 
-        [ ("", noEffect, No)
-        , ("", noEffect, No)
-        ]
-    , cardSet 4 Work 
-        [ ("", noEffect, No)
-        , ("", noEffect, No)
-        ]
-    , cardSet 4 Hobbies 
-        [ ("", noEffect, No)
-        , ("", noEffect, No)
-        ]
-    , cardSet 4 People
-        [ ("", noEffect, No)
-        , ("", noEffect, No)
-        ]
-    ] |> List.concat
-
-noEffect: Effect 
-noEffect = 
-    { target = You
-    , focus = 0
-    , cards = 0
-    , conditional = Nothing
+activityFromData : (String, List Int) -> Direction -> Bool -> Activity
+activityFromData (name, skills) startDirection flipOrder =
+    { name = name
+    , skills = skillsFromData (if flipOrder then List.reverse skills else skills) startDirection
     }
 
-simpleEffect: Int -> Int -> Effect
-simpleEffect focus cards = 
-    { target = You
-    , focus = focus
-    , cards = cards
-    , conditional = Nothing
-    }
-
-simpleFriendEffect: Int -> Int -> Effect
-simpleFriendEffect focus cards = 
-    { target = Friend
-    , focus = focus
-    , cards = cards
-    , conditional = Nothing
-    }
-
-cardSet: Int -> Topic -> List (String, Effect, Adjacency) -> List Conversation
-cardSet depth topic defList =
-    defList |> List.map (cardFromDef depth topic)
-
-cardFromDef: Int -> Topic -> (String, Effect, Adjacency) -> Conversation
-cardFromDef depth topic (name, effect, adjacency) =
-    { depth = depth
-    , topic = topic
-    , name = name
-    , effect = effect
-    , followups = followupsFromAdjacency topic adjacency
-    }
-
-
-followupsFromAdjacency : Topic -> Adjacency -> List Topic
-followupsFromAdjacency topic adjacency =
-    case adjacency of
-            Left -> topic :: [ adjacentLeft topic]
-            Right -> topic :: [adjacentRight topic ]
-            Both -> topic :: [adjacentLeft topic, adjacentRight topic]
-            No -> []
-
-type Adjacency 
-    = Left
-    | Right
-    | Both
-    | No
-
-adjacentLeft : Topic -> Topic
-adjacentLeft topic =
-    case topic of
-        Family -> Work
-        Work -> Hobbies
-        Hobbies -> People
-        People -> Family
-
-adjacentRight : Topic -> Topic
-adjacentRight topic =
-    case topic of
-        Family -> People
-        Work -> Family
-        Hobbies -> Work
-        People -> Hobbies
+skillsFromData : List Int -> Direction -> List (Int, Direction)
+skillsFromData skills startDirection =
+    case skills of 
+        [] -> []
+        head :: tail -> 
+            (head, startDirection) :: (skillsFromData tail (nextDirection startDirection))
+    
+nextDirection : Direction -> Direction
+nextDirection direction =
+    case direction of
+        Top -> Right
+        Right -> Bottom
+        Bottom -> Left
+        Left -> Top

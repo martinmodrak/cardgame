@@ -16,25 +16,35 @@ main =
 createModel : Model
 createModel =
     let 
-        conversations = Data.conversations |> List.map ConversationCard
-        locations = Data.locations |> List.map LocationCard
-        bugs = Data.bugConversation |> List.map BugCard
-        cards = List.concat [ conversations, locations ]
-        cards1 = subList 0 12 cards 
-        cards2 = subList 12 24 cards 
-        cards3 = subList 24 36 cards 
+        activities = Data.activities |> List.map ActivityCard
+        cards = List.concat [ activities ]
     in
-  { pages = 
-    {cards = bugs |> List.indexedMap createFrontFace } 
-    :: {cards = bugs |> List.map BackFace } 
-    :: {cards = cards1 |> List.indexedMap createFrontFace }
-    :: {cards = cards1 |> List.map BackFace }
-    :: {cards = cards2 |> List.indexedMap createFrontFace }
-    :: {cards = cards2 |> List.map BackFace }
-    :: {cards = cards3 |> List.indexedMap createFrontFace }
-    :: {cards = cards3 |> List.map BackFace }
-    :: []
+  { pages = splitToPages Data.cardsPerPage cards
   }
+
+splitToPages : Int -> List Card -> List Page
+splitToPages cardsPerPage cards =
+    case cards of
+        head :: tail ->
+            let
+                (takenCards, tail) = takeN cardsPerPage cards
+            in 
+                (Page takenCards) :: (splitToPages cardsPerPage tail)
+        [] -> []
+
+takeN : Int -> List a -> (List a, List a)
+takeN numRemaining l =
+    if numRemaining <= 0 then 
+        ([], l)
+    else 
+        case l of 
+            head :: tail ->
+                let 
+                    (taken, returnTail) = takeN (numRemaining - 1) tail
+                in 
+                    (head :: taken, returnTail)
+            [] ->
+                ([], [])
 
 subList : Int -> Int -> List a -> List a
 subList start end l =
@@ -48,8 +58,3 @@ subList start end l =
         case l of 
             head :: tail -> head :: (subList 0 (end - 1) tail)
             [] -> []
-
-
-createFrontFace : Int -> Card -> CardFace
-createFrontFace order card =
-    FrontFace ((order % Data.numCardBorders) + 1) card
