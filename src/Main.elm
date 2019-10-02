@@ -4,23 +4,27 @@ import Types exposing (..)
 import View
 import Html
 import Data 
+import Random
+
 
 main =
-    Html.beginnerProgram
-        { model = createModel
+    Html.program
+        { init = ({pages = [] }, Random.generate (Generated) (Data.activitiesGenerator))
         , view = View.view
-        , update = \_ model -> model
+        , update = update
+        , subscriptions = \_ -> Sub.none
         }
 
-
-createModel : Model
-createModel =
-    let 
-        activities = Data.activities |> List.map ActivityCard
-        cards = List.concat [ activities ]
-    in
-  { pages = splitToPages Data.cardsPerPage cards
-  }
+update: Msg -> Model -> (Model, Cmd Msg)
+update msg model =
+    case msg of 
+        Generated activities ->
+            let 
+                activitiesCards = activities |> List.map ActivityCard
+                cards = List.concat [ activitiesCards ]
+            in
+                ({ pages = splitToPages Data.cardsPerPage cards
+                }, Cmd.none)
 
 splitToPages : Int -> List Card -> List Page
 splitToPages cardsPerPage cards =

@@ -30,6 +30,9 @@ type alias Page =
     { cards: List Card
     }
 
+type Msg =
+    Generated (List Activity)
+
 
 type alias Model =
     { pages : List Page

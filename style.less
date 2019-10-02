@@ -2,39 +2,17 @@
 @border-color: #c0c0c0;
 @border-width: 0.5mm;
 
-@pageWidth:15.001cm;
+@pageWidth:20.1cm;
 @pageHeight:28cm;
 @pageMargin:0cm;
 
 @cardWidth: 50mm;
 @cardHeight: 50mm;
 
-@topicSize: 20mm;
-@topicMarginTop: 7mm;
+@skillSize: 8mm;
+@skillMargin:3mm;
 
-@contentMarginHorizontal: 7mm;
-
-@depthMarginTop: 0mm;
-@depthMarginLeft: @contentMarginHorizontal;
-@depthFontSize: 7mm;
-
-@nameMarginLeft: @depthMarginLeft + 8mm;
-@nameMarginTop: 1.5mm;
-@nameFontSize: 8pt;
-
-@effectMarginBottom: 6.5mm;
-@effectFontSize: 6pt;
-
-@effectImageSize: 7mm;
-
-@effectTextMarginBottom: 1mm;
-
-@followupsMarginBottom: 5mm;
-@followupsSize: 8mm;
-@followupMargin: 1.5mm;
-
-@locationTagMarginTop: 10mm;
-@locationTagFontSize: 7mm;
+@nameFontSize: 14pt;
 
 .withBorder(@border-color: @border-color, @border-width: @border-width) {
     box-shadow: 
@@ -138,151 +116,43 @@ body {
     overflow: hidden;
 }
 
-.page:nth-child(4n+3) .card{
-    float:right;
-}
 
 
-.fullCardImg {
-    display:block;
-    position:absolute;
-    width:100%;
-    height:100%;
-}
-
-.topic {
+.activity .name {
     display:block;
     position: absolute;
-    left: (@cardWidth - @topicSize) / 2;
-    top: @topicMarginTop;
-    width: @topicSize;
-    height: @topicSize;
-}
-
-.locationTag {
-    display:block;
-    position: absolute;
-    width: 100%;
+    left: @skillMargin + @skillSize + 2mm;
+    right: @skillMargin + @skillSize + 2mm;
     text-align: center;
-    top: @locationTagMarginTop;
-    font-size: @locationTagFontSize;
-    font-family: "skautbold";
-}
-
-.depth {
-    display:block;
-    position: absolute;
-    left: @depthMarginLeft;
-    text-align: left;
-    font-size: @depthFontSize;
-    font-family: "skautbold";
-    top: @topicMarginTop + @topicSize + @depthMarginTop;
-}
-
-.name {
-    display:block;
-    position: absolute;
-    left: @nameMarginLeft;
-    right: @contentMarginHorizontal;
-    text-align: left;
     font-size: @nameFontSize;
     font-family: "skautbold";
-    top: @topicMarginTop + @topicSize + @nameMarginTop;
+    top: (@cardHeight - 20mm) / 2;
 }
 
-.location .name {
-    left: @contentMarginHorizontal;
-    text-align:center;
-    top: @topicMarginTop + @topicSize + @nameMarginTop - 2mm;
-}
-
-.content() {
-    display:block;
+.skill {
+    display: block;
     position: absolute;
-    left: @contentMarginHorizontal;
-    right: @contentMarginHorizontal;
+    width:@skillSize;
+    height:@skillSize;
+    border: 1px gray solid;
 }
 
-.effect {
-    .content();
-    bottom: @effectMarginBottom + @effectTextMarginBottom + @followupsMarginBottom + @followupsSize;
+.skill.left {
+    left: @skillMargin;
+    top: (@cardHeight - @skillSize) / 2
 }
 
-.effectText {
-    .content();
-    bottom: @effectTextMarginBottom + @followupsMarginBottom + @followupsSize;
-    font-size: @effectFontSize;
-    font-style: italic;
+.skill.top {
+    top: @skillMargin;
+    left: (@cardWidth - @skillSize) / 2
 }
 
-.location .effectText {
-    .content();
-    bottom:  @followupsMarginBottom + 2mm;
-    font-size: @effectFontSize;
+.skill.right {
+    right: @skillMargin;
+    top: (@cardHeight - @skillSize) / 2
 }
 
-
-.followups {
-    .content();
-    bottom: @followupsMarginBottom;
-}
-
-
-.followup {
-    display:block;
-    float:left;
-    position: relative;
-    width: @followupsSize;
-    height: @followupsSize;
-    margin-left: @followupMargin;
-    margin-right: @followupMargin;
-}
-
-
-.effectElement() {
-    display:block;
-    float:left;
-    position:relative;
-}
-
-.effectSign {
-    .effectElement();
-    font-family: "skautbold";
-    font-size:13pt;
-}
-
-.targetFriend {
-    .effectElement();
-    width: @effectImageSize + 3mm;
-}
-
-.targetBoth {
-    .effectElement();
-    width: @effectImageSize + 4mm;
-    margin-right: 2mm;
-    margin-top:-2mm;
-}
-
-
-.gainFocus, .gainFocusFirst, .gainCard, .gainCardFirst {
-    .effectElement();
-    width: @effectImageSize * 0.9;
-    margin-left: -(@effectImageSize * 0.66); 
-}
-
-.gainCard {
-    margin-left: -(@effectImageSize * 0.5); 
-}
-
-.gainFocusFirst, .gainCardFirst {
-    margin-left : 0;
-}
-
-.conditionalEffect {
-    clear:both;
-}
-
-.conditionalEffectHeader {
-    .effectElement();
-    width: @effectImageSize;
+.skill.bottom {
+    bottom: @skillMargin;
+    left: (@cardWidth - @skillSize) / 2
 }
