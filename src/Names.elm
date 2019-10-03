@@ -1,9 +1,20 @@
-module Names exposing (namesForTeam)
+module Names exposing (namesForTeam, teamToLetter)
 
 namesForTeam : Int -> List String
 namesForTeam team =
     listGet team names |> Maybe.withDefault ["____"]
 
+teamToLetter : Int -> String
+teamToLetter team =
+    case team of
+        1 -> "C"
+        2 -> "E"
+        3 -> "H"
+        4 -> "L"
+        5 -> "M"
+        6 -> "J"
+        7 -> "D"
+        _ -> "XX"
 
 listGet : Int -> List a -> Maybe a
 listGet index list =

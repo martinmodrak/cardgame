@@ -1,9 +1,11 @@
 module RandomUtils exposing (
         fixedGenerator
         , rejectionSampling
+        , listMemberGenerator
     )
 
 import Random
+import Utils
 
 fixedGenerator : a -> Random.Generator a
 fixedGenerator value =
@@ -16,5 +18,22 @@ rejectionSampling check generator =
 
 
 --explicit head to always have something to return
+listMemberGenerator : a -> List a -> Random.Generator a
+listMemberGenerator listHead listTail =
+    let
+        numElements =
+            (List.length listTail) + 1
+    in
+        Random.int 0 (numElements - 1)
+            |> Random.map
+                (\index ->
+                    if index == 0 then
+                        listHead
+                    else
+                        case Utils.listGet (index - 1) listTail of
+                            Just x ->
+                                x
 
-
+                            Nothing ->
+                                listHead
+                )

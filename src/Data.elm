@@ -22,23 +22,18 @@ numTeams = 7
 
 cardsGenerator : Random.Generator (List Card)
 cardsGenerator =
-    cardsGeneratorInternal 1
-
-cardsGeneratorInternal : Int -> Random.Generator (List Card)
-cardsGeneratorInternal team =
-    if team >= numTeams then
-        cardsForTeamGenerator team
-    else 
-        Random.map2 List.append (cardsForTeamGenerator team) (cardsGeneratorInternal (team + 1))  
-
-cardsForTeamGenerator : Int -> Random.Generator (List Card)
-cardsForTeamGenerator team =
     let
-        sheepCards =  Random.map (List.map SheepCard) (sheepGenerator team)
-        activityCards = Random.map (List.map ActivityCard) (activitiesGenerator team)
+        sheepCards =  Random.map (List.map SheepCard) (generateForAllTeams 1 sheepGenerator)
+        activityCards = Random.map (List.map ActivityCard) (generateForAllTeams 1 activitiesGenerator)
     in
         Random.map2 List.append  sheepCards activityCards
 
+generateForAllTeams : Int -> (Int -> Random.Generator (List a)) -> Random.Generator (List a)
+generateForAllTeams team rawGenerator =
+    if team >= numTeams then
+        rawGenerator team
+    else 
+        Random.map2 List.append (rawGenerator team) (generateForAllTeams (team + 1) rawGenerator)  
 
 activitiesGenerator : Int -> Random.Generator (List Activity)
 activitiesGenerator team =
@@ -51,8 +46,9 @@ sheepGenerator team =
         needsListGenerator = needsGenerator |> Random.list (List.length sheepData) 
         directionsListGenerator = directionsGenerator |> Random.list (List.length sheepData)
         names = Names.namesForTeam team
+        imagesListGenerator = imagesGenerator sheepImages |> Random.list (List.length sheepData)
     in
-        Random.map2  (\listDirections needs -> List.map4 (sheepFromData team) names needs sheepData listDirections) directionsListGenerator needsListGenerator
+        Random.map3  (\listDirections needs images -> List.map5 (sheepFromData team) names needs sheepData listDirections images) directionsListGenerator needsListGenerator imagesListGenerator
 
 
 directionsGenerator : Random.Generator (List Direction)
@@ -91,32 +87,32 @@ directionsFromInt i =
 activitiesData : List (String, List Int)
 activitiesData =
     [ ("Výlet", [1])
-    , ("2", [2])
-    , ("3", [3])
-    , ("4", [4])
-    , ("5", [5])
-    ------------- 0 means
+    , ("Vaření", [2])
+    , ("Deskovky", [3])
+    , ("Kytary", [4])
+    , ("Pokec u ohně", [5])
+    --------
     , ("Menší ORWO", [1, 2])
-    , ("2", [1, 3])
-    , ("3", [1, 4])
-    , ("4", [1, 5])
-    , ("5", [2, 3])
-    , ("6", [2, 4])
-    , ("7", [2, 5])
-    , ("8", [3, 4])
-    , ("9", [3, 5])
-    , ("10", [4, 5])
+    , ("Povídání o emocích", [1, 3])
+    , ("Služba lidem", [1, 4])
+    , ("Služba přírodě", [1, 5])
+    , ("Služba památce", [2, 3])
+    , ("Putování", [2, 4])
+    , ("Duchovní večer", [2, 5])
+    , ("Krátký psycho program", [3, 4])
+    , ("Workshop na téma", [3, 5])
+    , ("Sdílecí program", [4, 5])
     ------
-    , ("Menší ORWO", [1, 2, 3])
-    , ("2", [1, 2, 4])
-    , ("3", [1, 2, 5])
-    , ("4", [1, 3, 4])
-    , ("5", [1, 3, 5])
-    , ("6", [1, 4, 5])
-    , ("7", [2, 3, 4])
-    , ("8", [2, 3, 5])
-    , ("9", [2, 4, 5])
-    , ("10", [3, 4, 5])
+    , ("LARP", [1, 2, 3])
+    , ("Šifrovačka", [1, 2, 4])
+    , ("Velká terénní hra", [1, 2, 5])
+    , ("Zdravotnická simulačka", [1, 3, 4])
+    , ("Velká simulační hra", [1, 3, 5])
+    , ("Akce pro veřejnost", [1, 4, 5])
+    , ("Velký psycho program", [2, 3, 4])
+    , ("Vymazlené ORWO", [2, 3, 5])
+    , ("Komponovaný večer", [2, 4, 5])
+    , ("Silný zážitkový", [3, 4, 5])
     ]
 
 needsGenerator : Random.Generator (List (Need, Int))
@@ -177,8 +173,26 @@ sheepData =
     , [2, 3, 4, 4]
     ]
 
-sheepFromData : Int -> String -> List (Need, Int) -> List Int -> List Direction -> Sheep
-sheepFromData team name needs rawSkills directions =
+imagesGenerator : List (Bool, String, String, List String) -> Random.Generator (List SheepImage)
+imagesGenerator imageSet =
+    case imageSet of
+        [] -> RandomUtils.fixedGenerator []
+        (color, class, first,others) :: tail -> (RandomUtils.listMemberGenerator first others) |> 
+            Random.andThen (\x -> imagesGenerator tail |> Random.map (\y -> {class = class, doColor = color, name = x} :: y)  )
+
+sheepImages: List (Bool, String, String, List String)
+sheepImages =
+    [ (False, "nohy", "nohy-01.svg", [])
+    , (False, "telo", "telo1-01.svg", ["telo2-01.svg","telo3-01.svg","telo4-01.svg"])
+    , (False, "hlava", "hlava-01.svg", [])
+    , (False, "ocas", "ocas1-01.svg", ["ocas2-01.svg", ""])
+    , (True, "oci", "oci1-01.svg", ["oči 2-01.svg"])
+    , (True, "pusa", "pusa1-01.svg", ["pusa2-01.svg", "pusa2-01.svg"])
+    , (True, "usi", "usi1-01.svg", ["usi2-01.svg"])
+    ]
+
+sheepFromData : Int -> String -> List (Need, Int) -> List Int -> List Direction -> List SheepImage -> Sheep
+sheepFromData team name needs rawSkills directions images =
     let
         omittedSkill = omittedSkillForTeam team
         skills = List.map (rawSkillsToSkills omittedSkill) rawSkills        
@@ -186,6 +200,7 @@ sheepFromData team name needs rawSkills directions =
         { name = name
         , team = team
         , needs = needs
+        , images = images
         , skills =  List.map2 (,) skills directions
         }
 

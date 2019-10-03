@@ -11,11 +11,17 @@ type Direction
     | Right
     | Bottom
 
+type alias SheepImage =
+    { class : String
+    , doColor : Bool
+    , name : String}
+
 type alias Sheep =
     { name: String
     , team: Int
     , needs: List (Need, Int)
     , skills: List (Int, Direction)
+    , images: List SheepImage
     }
 
 type alias Activity =
