@@ -13,25 +13,27 @@ type Direction
 
 type alias Sheep =
     { name: String
+    , team: Int
     , needs: List (Need, Int)
     , skills: List (Int, Direction)
     }
 
 type alias Activity =
     { name: String
+    , team: Int
     , skills: List (Int, Direction)
     }
 
 type Card 
-    --= SheepCard Sheep
-    = ActivityCard Activity 
+    = SheepCard Sheep
+    | ActivityCard Activity 
 
 type alias Page =
     { cards: List Card
     }
 
 type Msg =
-    Generated (List Activity)
+    Generated (List Card)
 
 
 type alias Model =

@@ -11,10 +11,6 @@ view model =
     div [ Attr.class "wrapper" ] 
     (List.map viewPage model.pages |> List.concat) 
 
--- credits : List (Html Msg)
--- credits = 
---     [ p [] [ text "Cube image from https://commons.wikimedia.org/wiki/File:Cube_(PSF).png" ]
---     ]
 
 viewPage : Page -> List (Html Msg)
 viewPage page =
@@ -24,11 +20,12 @@ viewPage page =
 viewCard : Card -> Html Msg
 viewCard card = 
     let 
-        content = 
+        (content, class, team) = 
             case card of
-                ActivityCard activity -> viewActivity activity
+                ActivityCard activity -> (viewActivity activity, "activity", activity.team)
+                SheepCard sheep -> (viewSheep sheep, "sheep", sheep.team)
     in 
-        div [ Attr.class "card"] [ content ]
+        div [ Attr.classList [("card", True), (class, True)], Attr.style [("background-color", teamToColor team)]] [ content ]
 
 viewActivity : Activity -> Html Msg
 viewActivity activity =
@@ -37,7 +34,20 @@ viewActivity activity =
             ( div [ Attr.class "name"] [ text activity.name ] ) ::
             (activity.skills |> List.map viewSkill)            
     in
-        div [ Attr.class "Activity"] content
+        div [ Attr.class "content"] content
+
+viewSheep : Sheep -> Html Msg
+viewSheep sheep =
+    let 
+        content =             
+            ( div [ Attr.class "name"] [ text sheep.name ] ) ::
+            (List.append 
+                (sheep.skills |> List.map viewSkill)            
+                
+                (sheep.needs |> List.map viewNeed)            
+            )
+    in
+        div [ Attr.class "content"] content
 
 viewSkill : (Int, Direction) -> Html Msg
 viewSkill (skill, direction) =
@@ -50,3 +60,36 @@ classForDirection direction =
         Top -> "top"
         Bottom -> "bottom"
         Right -> "right"
+
+viewNeed : (Need, Int) -> Html Msg
+viewNeed (need, number) = 
+    div [ Attr.classList [("need", True), (classForNeed need, True)]] [ 
+        div [ Attr.class "needLabel" ] [ text (textForNeed need)],
+        div [ Attr.class "needValue" ] [ text (toString number) ]
+        ]
+
+classForNeed : Need -> String
+classForNeed need =
+    case need of
+        Pratelstvi -> "pratelstvi"
+        Posun -> "posun"
+        Presah -> "presah"
+
+textForNeed : Need -> String
+textForNeed need =
+    case need of
+        Pratelstvi -> "Přátelství"
+        Posun -> "Posun"
+        Presah -> "Přesah"
+
+teamToColor : Int -> String
+teamToColor team =
+    case team of
+        1 -> "lightblue"
+        2 -> "#ffc0c0"
+        3 -> "lightgreen"
+        4 -> "gold"
+        5 -> "lightcyan"
+        6 -> "#ffc0ff"
+        7 -> "lightyellow"
+        _ -> "gray"

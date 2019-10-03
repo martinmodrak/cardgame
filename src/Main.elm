@@ -9,7 +9,7 @@ import Random
 
 main =
     Html.program
-        { init = ({pages = [] }, Random.generate (Generated) (Data.activitiesGenerator))
+        { init = ({pages = [] }, Random.generate (Generated) (Data.cardsGenerator))
         , view = View.view
         , update = update
         , subscriptions = \_ -> Sub.none
@@ -18,13 +18,9 @@ main =
 update: Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of 
-        Generated activities ->
-            let 
-                activitiesCards = activities |> List.map ActivityCard
-                cards = List.concat [ activitiesCards ]
-            in
-                ({ pages = splitToPages Data.cardsPerPage cards
-                }, Cmd.none)
+        Generated cards ->
+            ({ pages = splitToPages Data.cardsPerPage cards
+            }, Cmd.none)
 
 splitToPages : Int -> List Card -> List Page
 splitToPages cardsPerPage cards =
