@@ -26,7 +26,7 @@ cardsGenerator =
         sheepCards =  Random.map (List.map SheepCard) (generateForAllTeams 1 sheepGenerator)
         activityCards = Random.map (List.map ActivityCard) (generateForAllTeams 1 activitiesGenerator)
     in
-        Random.map2 List.append  sheepCards activityCards
+        Random.map2 (\x y -> List.concat [x, y, losovatkoCards])  sheepCards activityCards
 
 generateForAllTeams : Int -> (Int -> Random.Generator (List a)) -> Random.Generator (List a)
 generateForAllTeams team rawGenerator =
@@ -50,6 +50,23 @@ sheepGenerator team =
     in
         Random.map3  (\listDirections needs images -> List.map5 (sheepFromData team) names needs sheepData listDirections images) directionsListGenerator needsListGenerator imagesListGenerator
 
+losovatkoCards: List Card
+losovatkoCards =
+    losovatkoCardsInternal 1
+
+losovatkoCardsInternal : Int -> List Card
+losovatkoCardsInternal team =
+    if team > numTeams then
+        []
+    else 
+        List.append (losovatkoCardsPerTeam team 1) (losovatkoCardsInternal (team + 1))
+
+losovatkoCardsPerTeam : Int -> Int -> List Card
+losovatkoCardsPerTeam team skill =
+    if skill > numSkills then
+        []
+    else 
+        (LosovatkoCard {team = team, skill = skill}) :: (losovatkoCardsPerTeam team (skill + 1))
 
 directionsGenerator : Random.Generator (List Direction)
 directionsGenerator =
@@ -93,14 +110,14 @@ activitiesData =
     , ("Pokec u ohně", [5])
     --------
     , ("Menší ORWO", [1, 2])
-    , ("Povídání o emocích", [1, 3])
+    , ("Tanec", [1, 3])
     , ("Služba lidem", [1, 4])
     , ("Služba přírodě", [1, 5])
     , ("Služba památce", [2, 3])
     , ("Putování", [2, 4])
     , ("Duchovní večer", [2, 5])
     , ("Krátký psycho program", [3, 4])
-    , ("Workshop na téma", [3, 5])
+    , ("Umělecký workshop", [3, 5])
     , ("Sdílecí program", [4, 5])
     ------
     , ("LARP", [1, 2, 3])
@@ -183,12 +200,12 @@ imagesGenerator imageSet =
 sheepImages: List (Bool, String, String, List String)
 sheepImages =
     [ (False, "nohy", "nohy-01.svg", [])
-    , (False, "telo", "telo1-01.svg", ["telo2-01.svg","telo3-01.svg","telo4-01.svg"])
+    , (False, "telo", "telo1-01.svg", ["telo2-01.svg","telo3-01.svg","telo4-01.svg", "telo5-01.svg", "telo6-01.svg", "telo7-01.svg"])
     , (False, "hlava", "hlava-01.svg", [])
     , (False, "ocas", "ocas1-01.svg", ["ocas2-01.svg", ""])
     , (True, "oci", "oci1-01.svg", ["oči 2-01.svg"])
     , (True, "pusa", "pusa1-01.svg", ["pusa2-01.svg", "pusa2-01.svg"])
-    , (True, "usi", "usi1-01.svg", ["usi2-01.svg"])
+    , (True, "usi", "usi1-01.svg", ["usi2-01.svg", ""])
     ]
 
 sheepFromData : Int -> String -> List (Need, Int) -> List Int -> List Direction -> List SheepImage -> Sheep

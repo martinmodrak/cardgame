@@ -1,6 +1,6 @@
 @base-color: black;
 @border-color: #c0c0c0;
-@border-width: 0.5mm;
+@border-width: 0.2mm;
 
 @pageWidth:21cm;
 @pageHeight:29.7cm;
@@ -79,9 +79,15 @@ body {
 .background {
     display: block;
     position: absolute;
-    width:100%;
-    height:100%;
+    top:1mm;
+    left:1mm;
+    bottom: 1mm;
+    right:1mm;
 }
+
+.activity .background {
+    background-color: rgb(190, 190, 190);
+  }  
 
 @skillSize: 10mm;
 @skillMargin:-0.4 * @skillSize;
@@ -94,6 +100,7 @@ body {
     right: @skillMargin + @skillSize + 2mm;
     text-align: center;
     font-size: 15pt;
+    font-weight:bold;
     color:white;
     top: (@cardHeight - 15mm) / 2;
 }
@@ -129,13 +136,13 @@ body {
 .skill.left {
     left: @skillMargin;
     top: (@cardHeight - @skillSize) / 2;
-    transform: rotate(90deg);
+    transform: scaleY(-1) rotate(90deg);
 }
 
 .skill.top {
     top: @skillMargin;
     left: (@cardWidth - @skillSize) / 2;
-    transform: rotate(180deg);
+    transform: scaleX(-1) rotate(180deg);
 }
 
 .skill.right {
@@ -210,4 +217,17 @@ body {
 .card:nth-child(6n +3) .oci, .card:nth-child(6n +4) .oci
  {
     transform: rotate(22deg) translate(-2.5mm, -2mm);
+}
+
+.losovatko .letter {
+    color:black;
+}
+
+.losovatko img {
+    display:block;
+    position: absolute;
+    width: 34mm;
+    height:34mm;
+    top:16mm;
+    left:8mm
 }

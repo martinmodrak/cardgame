@@ -30,9 +30,15 @@ type alias Activity =
     , skills: List (Int, Direction)
     }
 
+type alias Losovatko =
+    { team: Int
+    , skill: Int
+    }
+
 type Card 
     = SheepCard Sheep
     | ActivityCard Activity 
+    | LosovatkoCard Losovatko
 
 type alias Page =
     { cards: List Card

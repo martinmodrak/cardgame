@@ -25,14 +25,22 @@ viewCard card =
             case card of
                 ActivityCard activity -> (viewActivity activity, "activity")
                 SheepCard sheep -> (viewSheep sheep, "sheep")
+                LosovatkoCard losovatko -> (viewLosovatko losovatko, "losovatko")
     in 
         div [ Attr.classList [("card", True), (class, True)]] [ content ]
+
+viewLosovatko: Losovatko -> Html Msg
+viewLosovatko losovatko =
+    div [ Attr.class "content"] [ 
+        img [ Attr.src ("img/milion/dovednost" ++ (toString losovatko.skill) ++ "-01.png") ] [],
+        div [ Attr.class "letter"] [ text (Names.teamToLetter losovatko.team)]  
+         ]
 
 viewActivity : Activity -> Html Msg
 viewActivity activity =
     let 
         content =             
-            ( img [ Attr.class "background", Attr.src "img/milion/pozadi-01.svg", Attr.style [("filter", "saturate(0) brightness(1.06)")]] []) ::
+            ( div [ Attr.class "background"] []) ::
             ( div [ Attr.class "name"] [ text activity.name ] ) ::
             ( div [ Attr.class "letter"] [ text (Names.teamToLetter activity.team)]) :: 
             (activity.skills |> List.map viewSkill)            
@@ -43,7 +51,7 @@ viewSheep : Sheep -> Html Msg
 viewSheep sheep =
     let 
         content =             
-            ( img [ Attr.class "background", Attr.src "img/milion/pozadi-01.svg", Attr.style (styleForTeam sheep.team)] []) ::
+            ( div [ Attr.class "background", Attr.style [("background-color", colorForTeam sheep.team)]] []) ::
             ( div [ Attr.class "name"] [ text sheep.name ] ) ::
             ( img [ Attr.class "needsText", Attr.src "img/milion/3P-01.svg"] []) ::
             ( div [ Attr.class "visual"] (sheep.images |> List.map (viewSheepImage sheep.team))) ::
@@ -72,13 +80,25 @@ styleForTeam team =
 filterForTeam: Int -> String
 filterForTeam team =
     let 
-        (hue, saturate) =
+        (hue, saturate, brightness) =
             case team of
-                1 -> (0, 100)
-                2 -> (215, 100)
-                _ -> (0, 0)
+                --1 -> (302, 65, 80)
+                --2 -> (173, 77, 71)
+                _ -> (0, 0, 200)
     in
-        "hue-rotate(" ++ toString(hue) ++ "deg) saturate(" ++ toString(saturate) ++ "%)"
+        "hue-rotate(" ++ toString(hue) ++ "deg) saturate(" ++ toString(saturate) ++ "%) brightness(" ++ toString(brightness) ++ "%)"
+
+colorForTeam: Int -> String 
+colorForTeam team =
+    case team of
+        1 -> "#B15F6C"
+        2 -> "#307e85"
+        3 -> "#DFBAB6"
+        4 -> "#E1b128"
+        5 -> "#9fc1bb"
+        6 -> "#c58166"
+        7 -> "#939955"
+        _ -> "gray"
 
 viewSkill : (Int, Direction) -> Html Msg
 viewSkill (skill, direction) =
